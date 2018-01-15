@@ -5,8 +5,8 @@ public class MainApp {
 
     public static void main(String[] args) {
         Recommender recommender = new Recommender(args.length == 1? args[0] : DEFAULT_ENGINE_PATH);
+        Shop shop = new Shop(recommender);
 
-        recommender.startEngine();
-        recommender.getRecommendations();
+        shop.start();
     }
 }
