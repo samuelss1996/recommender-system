@@ -23,14 +23,13 @@ public class Recommender {
         this.clips.run();
     }
 
-    // TODO change defaults
     public void storeUserIfNotExists(User user) {
         User storedUser = this.getStoredUser(user.getUsername());
         int userId;
 
         if (storedUser == null) {
             userId = this.highestUserId() + 1;
-            this.clips.eval(String.format("(assert (user (id %d) (name %s) (age 21) (sex m)))", userId, user.getUsername()));
+            this.clips.eval(String.format("(assert (user (id %d) (name %s)))", userId, user.getUsername()));
         } else {
             userId = storedUser.getId();
         }
@@ -48,13 +47,12 @@ public class Recommender {
 
                 int id = ((IntegerValue) product.getFactSlot("id")).intValue();
                 String name = ((SymbolValue) product.getFactSlot("name")).symbolValue();
+                int stock = ((IntegerValue) product.getFactSlot("stock")).intValue();
                 List tags = ((MultifieldValue) product.getFactSlot("tags")).multifieldValue();
 
-                products.add(new Product(id, name, tags));
+                products.add(new Product(id, name, stock, tags));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) { }
 
         return products;
     }

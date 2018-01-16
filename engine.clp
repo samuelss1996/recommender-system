@@ -74,4 +74,17 @@
 
 	(product (id 1) (name Escoba) (stock 2) (tags limpieza hogar))
 	(product (id 2) (name Lejia) (stock 3) (tags limpieza hogar))
+	(product (id 3) (name Robot_de_Limpieza) (stock 5) (tags limpieza hogar tecnologia))
+	(product (id 4) (name Portatil_de_sobremesa) (stock 4) (tags tecnologia informatica))
+	(product (id 5) (name Tarjeta_grafica) (stock 3) (tags tecnologia informatica))
+	(product (id 6) (name Yogurtera) (stock 6) (tags comida))
+	(product (id 7) (name Pancakes) (stock 7) (tags comida))
+	(product (id 8) (name Cafes) (stock 8) (tags comida informatica))
+	(product (id 9) (name Teclado_mecanico) (stock 3) (tags tecnologia informatica))
+
+	(shop_order (user_id 1) (product_id 1))
+	(shop_order (user_id 1) (product_id 4))
+
+	(shop_order (user_id 2) (product_id 6))
+	(shop_order (user_id 2) (product_id 5))
 )
