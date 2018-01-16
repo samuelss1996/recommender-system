@@ -49,16 +49,43 @@ public class Shop {
             System.out.println(MainMenuAction.actionsToString("\t"));
             System.out.print("Acción (introducir número): ");
 
-            chosenAction = MainMenuAction.findById(new Scanner(System.in).next());
+            chosenAction = MainMenuAction.findById(new Scanner(System.in).next().trim());
         }
 
         return chosenAction;
     }
 
     private void buyProducts() {
-        for (Product product : this.recommender.getProducts()) {
-            System.out.println(product.getProductName());
+        List<Product> products = this.recommender.getProducts();
+        int chosenProductIndex = 0;
+
+        System.out.println("¿Qué producto desea comprar?");
+
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            System.out.println(String.format("\t%d. %s", i + 1, product.getProductName()));
         }
+
+        System.out.println("\tc. Cancelar");
+        System.out.print("Opción: ");
+
+        while(chosenProductIndex <= 0) {
+            String input = new Scanner(System.in).next().trim();
+
+            try {
+                chosenProductIndex = Integer.valueOf(input);
+                chosenProductIndex = (chosenProductIndex >= 1 && chosenProductIndex <= products.size())? chosenProductIndex : 0;
+            } catch (NumberFormatException e) {
+                if(input.equals("c")) {
+                    return;
+                }
+            }
+        }
+
+        Product chosenProduct = products.get(chosenProductIndex - 1);
+        this.recommender.buyProduct(this.user.getId(), chosenProduct.getProductId());
+
+        System.out.println("Su compra se ha realizado satisfactoriamente");
     }
 
     private void showRecommendations() {

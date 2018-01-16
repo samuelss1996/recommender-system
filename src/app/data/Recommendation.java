@@ -1,16 +1,16 @@
 package app.data;
 
 public class Recommendation {
-    private final int productId;
-    private final int userId;
+    private final Product product;
+    private final User user;
 
-    public Recommendation(int productId, int userId) {
-        this.productId = productId;
-        this.userId = userId;
+    public Recommendation(Product product, User user) {
+        this.product = product;
+        this.user = user;
     }
 
     @Override
     public String toString() {
-        return String.format("Producto: %d --> Usuario %d", this.productId, this.userId);
+        return String.format("Recomendación: %s", this.product.getProductName());
     }
 }

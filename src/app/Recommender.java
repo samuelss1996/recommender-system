@@ -25,12 +25,17 @@ public class Recommender {
 
     // TODO change defaults
     public void storeUserIfNotExists(User user) {
-        if(!this.existsUser(user)) {
-            int userId = (user.getId() != null)? user.getId() : this.highestUserId() + 1;
+        User storedUser = this.getStoredUser(user.getUsername());
+        int userId;
 
-            user.setId(userId);
-            this.clips.eval(String.format("(assert (user (id %d) (name %s) (age 21) (sex m)))", user.getId(), user.getUsername()));
+        if (storedUser == null) {
+            userId = this.highestUserId() + 1;
+            this.clips.eval(String.format("(assert (user (id %d) (name %s) (age 21) (sex m)))", userId, user.getUsername()));
+        } else {
+            userId = storedUser.getId();
         }
+
+        user.setId(userId);
     }
 
     public List<Product> getProducts() {
@@ -54,6 +59,11 @@ public class Recommender {
         return products;
     }
 
+    public void buyProduct(int userId, int productId) {
+        this.clips.eval(String.format("(assert (shop_order (user_id %d) (product_id %d)))", userId, productId));
+        this.clips.run();
+    }
+
     public List<Recommendation> getRecommendations(User user) {
         MultifieldValue clipsRecommendations = (MultifieldValue) this.clips.eval("(find-all-facts ((?f recommendation)) TRUE)");
         List<Recommendation> recommendations = new ArrayList<>();
@@ -65,13 +75,13 @@ public class Recommender {
                 int productId = ((IntegerValue) recommendation.getFactSlot("product_id")).intValue();
                 int userId = ((IntegerValue) recommendation.getFactSlot("user_id")).intValue();
 
-                if (user.getId() == userId) {
-                    recommendations.add(new Recommendation(productId, userId));
+                Product product = this.findProductById(productId);
+
+                if (user.getId() == userId && product != null) {
+                    recommendations.add(new Recommendation(product, user));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) { }
 
         return recommendations;
     }
@@ -94,21 +104,25 @@ public class Recommender {
         return users;
     }
 
-    private boolean existsUser(User user) {
+    private User getStoredUser(String username) {
         for (User currentUser : this.findAllUsers()) {
-            if(currentUser.getUsername().equals(user.getUsername())) {
-                return true;
+            if (currentUser.getUsername().equals(username)) {
+                return currentUser;
             }
         }
 
-        return false;
+        return null;
+    }
+
+    private Product findProductById(int productId) {
+        return this.getProducts().stream().filter(it -> it.getProductId() == productId).findFirst().orElse(null);
     }
 
     private int highestUserId() {
         int result = 0;
 
         for (User user : this.findAllUsers()) {
-            result = (user.getId() > result)? user.getId() : result;
+            result = (user.getId() > result) ? user.getId() : result;
         }
 
         return result;
